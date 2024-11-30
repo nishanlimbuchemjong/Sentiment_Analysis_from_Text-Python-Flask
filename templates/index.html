@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sentiment Analysis App</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #F3F4F6; /* Light Gray */
+            color: #1E3A8A; /* Deep Blue for main text */
+            font-family: Arial, sans-serif;
+        }
+        .banner-section {
+            background-image: url('{{ url_for('static', filename='images/banner4.jpg') }}');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            text-align: center;
+            padding: 100px 0;
+        }
+        .banner-section h1 {
+            font-size: 3rem;
+            font-weight: bold;
+            text-shadow: 5px 7px 8px rgba(0, 0, 0, 1);
+        }
+        .banner-section p {
+            font-size: 1.25rem;
+            margin-top: 20px;
+            text-shadow: 10px 7px 19px rgba(0, 0, 0, 0.5);
+        }
+        .accent-color {
+            color: #10B981; /* Accent Green */
+        }
+        .hero-section {
+            background-color: #1E3A8A; /* Deep Blue */
+            color: #ffffff;
+            padding: 60px 0;
+            text-align: center;
+        }
+        .card-img-top {
+            object-fit: cover;
+            height: 200px;
+        }
+        .accent-color {
+            color: #10B981; /* Accent Green */
+        }
+        .contact-banner {
+            background-image: url('{{ url_for('static', filename='images/banner.jpg') }}');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            padding: 50px 0;
+            text-align: center;
+        }
+        /* Card Styling for Sentiment Analysis Form */
+        .sentiment-card {
+            background: linear-gradient(135deg, #FFFFFF 50%, #F3F4F6 100%);
+            border: none;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+        }
+        .form-label {
+            color: #1E3A8A;
+        }
+
+        .form-control {
+            border-radius: 10px;
+<!--            border-color: #10B981;-->
+            border-color:  #1E3A8A; ;
+        }
+
+        .btn-submit {
+            background-color: #1E3A8A;
+            border-color: #1E3A8A;
+            color: white;
+            border-radius: 10px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .btn-submit:hover {
+            background-color: #155080;
+            border-color: #155080;
+            color: white;
+        }
+
+        .sentiment-title {
+            font-size: 2rem;
+            color: #1E3A8A;
+        }
+
+        .text-muted {
+            color: #6B7280 !important; /* Muted Gray */
+        }
+        .image-cover-container {
+            position: relative;
+            width: 50%;
+            height: 25rem; /* Ensures container fills the height of its parent */
+            overflow: hidden; /* Clips any overflow from the image */
+            border-radius: 5px; /* Optional rounded corners */
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Optional shadow */
+            min-height: 300px; /* Ensures visible area */
+        }
+
+        .image-cover {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Ensures image covers the container area */
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/" style="margin-left:10px;"><b>SA</b></a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#about">About</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#contact">Contact</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/login">Login</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/register">Register</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+     <!-- Banner Section -->
+    <section class="banner-section">
+        <h1>Welcome to Sentiment Analysis from Text</h1>
+        <p>Experience the power of AI-driven insights with our sentiment analysis tool</p>
+    </section>
+
+    <!-- Main Container -->
+    <div class="container mt-5">
+        <!-- Sentiment Analysis Form -->
+        <div class="container mt-5">
+            <div class="row">
+                <div class="col-12">
+                    <div class="sentiment-card p-4">
+                        <h1 class="sentiment-title text-center"><b>Sentiment Analysis from Text</b></h1>
+                        <p class="text-muted text-center">Analyze the sentiment of your text with our advanced AI model.</p>
+
+                        <!-- Display Flask flash messages -->
+                        {% with messages = get_flashed_messages(with_categories=true) %}
+                            {% if messages %}
+                                <div class="container mt-4">
+                                    {% for category, message in messages %}
+                                        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                                             {% if comment is defined and comment.strip() %}
+                                                {{ comment }}
+                                            {% endif %}
+                                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        {% endwith %}
+
+                        <form action="/predict" method="post">
+                            <div class="mb-4">
+                                <label for="text" class="form-label">Enter Comment</label>
+                                <textarea class="form-control" name="text" id="text" rows="5" placeholder="Type your comment here..." required>{% if comment is defined and comment.strip() %}{{ comment }}{% endif %}</textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100" style="height: 3rem;">Get Sentiment</button>
+                        </form>
+                        <br>
+                        <!-- Only show prediction if there is one -->
+                        {% if prediction %}
+                            <div class="alert {% if prediction == 'Positive' %}alert-success{% else %}alert-danger{% endif %} py-2 text-center" role="alert">
+                                <h5 class="fw-bold {% if prediction == 'Positive' %}text-success{% else %}text-danger{% endif %}">{{ prediction }}</h5>
+                            </div>
+                        {% endif %}
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+        <!-- About Section -->
+        <section class="hero-section" id="about" style="margin-top:3rem;">
+            <div class="container">
+                <h1 class="display-4">About Our Sentiment Analysis Application</h1>
+                <p class="lead">Leveraging AI to Understand Emotions in Text</p>
+            </div>
+        </section>
+
+        <!-- About Content -->
+        <div class="container my-5">
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <img src="{{ url_for('static', filename='images/ai_connection.jpg') }}" alt="Sentiment Analysis Illustration" class="img-fluid rounded" style="width: 34rem;">
+                </div>
+                <div class="col-md-6">
+                    <h2 class="accent-color"><b style="color:#1E3A8A;">Our Mission</b></h2>
+                    <p>
+                        Our sentiment analysis application aims to transform how we understand text emotions.
+                        With a powerful AI model, we help users analyze sentiments accurately and extract insights
+                        from various text sources.
+                    </p>
+                    <p>
+                        From tracking user feedback to understanding social media responses, our tool enables
+                        informed decisions that improve communication and engagement.
+                    </p>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <h2 class="accent-color"><b style="color:#1E3A8A;">How It Works</b></h2>
+                    <p>
+                        Our application leverages machine learning to classify sentiments as positive, negative, or neutral.
+                        By using advanced algorithms and a large dataset of text samples, we ensure that each analysis is
+                        as accurate and insightful as possible.
+                    </p>
+                    <p>
+                        Whether you’re a business or an individual, our tool provides a seamless experience for uncovering
+                        sentiment trends in your text data.
+                    </p>
+                </div>
+                <div class="col-md-6">
+                    <img src="{{ url_for('static', filename='images/devices.jpg') }}" alt="AI Model Illustration" class="img-fluid rounded" style="width: 34rem;">
+                </div>
+            </div>
+
+            <div class="row text-center mt-5">
+                <h2 class="accent-color" style="color:#1E3A8A;"><b>Features</b></h2>
+                <div class="col-md-4">
+                    <div class="card border-0 shadow-sm">
+                        <img src="{{ url_for('static', filename='images/real_time.jpg') }}" class="card-img-top" alt="Real-Time Analysis">
+                        <div class="card-body">
+                            <h5 class="card-title">Real-Time Analysis</h5>
+                            <p class="card-text">
+                                Get instant feedback on sentiment in your text, allowing quick insights into the emotions conveyed.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card border-0 shadow-sm">
+                        <img src="{{ url_for('static', filename='images/report.jpg') }}" class="card-img-top" alt="Detailed Reports">
+                        <div class="card-body">
+                            <h5 class="card-title">Detailed Reports</h5>
+                            <p class="card-text">
+                                Generate comprehensive sentiment reports to track trends over time and make data-driven decisions.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card border-0 shadow-sm">
+                        <img src="{{ url_for('static', filename='images/user_friendly.jpg') }}" class="card-img-top" alt="User-Friendly Interface">
+                        <div class="card-body">
+                            <h5 class="card-title">User-Friendly Interface</h5>
+                            <p class="card-text">
+                                A simple, intuitive design that makes sentiment analysis accessible for all user levels.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+         <!-- Contact Banner -->
+    <section class="contact-banner" id="contact">
+        <h1>Get In Touch With Us</h1>
+        <p>We'd love to hear your feedback and answer any questions!</p>
+    </section>
+
+    <!-- Contact Section -->
+    <section class="container mt-5">
+        <h2 class="text-center accent-color" style="color:#1E3A8A;"><b>Contact Us</b></h2>
+        <p class="text-center text-muted">Please fill out the form below, and we’ll get back to you soon.</p>
+
+        <div class="row">
+            <div class="image-cover-container">
+                <img src="{{ url_for('static', filename='images/hands.jpg') }}" alt="Contact Illustration" class="img-fluid rounded shadow-sm">
+            </div>
+            <div class="col-md-6">
+                <form action="/contact" method="post" class="mt-4">
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Name</label>
+                        <input type="text" class="form-control" id="name" name="name" placeholder="Your Name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="email" name="email" placeholder="Your Email" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="message" class="form-label">Message</label>
+                        <textarea class="form-control" id="message" name="message" rows="4" placeholder="Your Message" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Send Message</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white text-center py-4 mt-5">
+        <p>&copy; 2024 Sentiment Analysis Application. All Rights Reserved.</p>
+    </footer>
+
+<!--    &lt;!&ndash; Bootstrap JS and dependencies &ndash;&gt;-->
+<!--    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>-->
+<!--    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>-->
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+
+</body>
+</html>
